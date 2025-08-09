@@ -1,8 +1,7 @@
-import React from 'react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import ChatInterface from './components/ChatInterface';
-import { ChatProvider } from './context/ChatContext';
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+import CssBaseline from '@mui/material/CssBaseline'
+import ChatInterface from './components/ChatInterface'
+import { ChatProvider } from './context/ChatContext'
 
 const theme = createTheme({
   palette: {
@@ -32,7 +31,7 @@ const theme = createTheme({
   shape: {
     borderRadius: 12,
   },
-});
+})
 
 function App() {
   return (
@@ -42,7 +41,7 @@ function App() {
         <ChatInterface />
       </ChatProvider>
     </ThemeProvider>
-  );
+  )
 }
 
-export default App;
+export default App
