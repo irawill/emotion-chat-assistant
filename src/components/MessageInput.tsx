@@ -18,9 +18,16 @@ interface MessageInputProps {
   onChange: (value: string) => void;
   onSend: () => void;
   disabled?: boolean;
+  placeholder?: string;
 }
 
-function MessageInput({ value, onChange, onSend, disabled }: MessageInputProps) {
+function MessageInput({ 
+  value, 
+  onChange, 
+  onSend, 
+  disabled,
+  placeholder = "输入你想说的话..."
+}: MessageInputProps) {
   const handleKeyPress = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -37,7 +44,7 @@ function MessageInput({ value, onChange, onSend, disabled }: MessageInputProps) 
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyPress={handleKeyPress}
-        placeholder="输入你想说的话..."
+        placeholder={placeholder}
         disabled={disabled}
         variant="outlined"
         sx={{
