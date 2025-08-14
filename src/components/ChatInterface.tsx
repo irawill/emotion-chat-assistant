@@ -7,19 +7,24 @@ import {
   IconButton,
   Tooltip,
   Fade,
-  Chip
+  Chip,
+  Switch,
+  FormControlLabel
 } from '@mui/material';
 import {
   Delete as DeleteIcon,
   Mood as MoodIcon,
   SentimentSatisfiedAlt as HappyIcon,
   SentimentDissatisfied as SadIcon,
-  SentimentNeutral as NeutralIcon
+  SentimentNeutral as NeutralIcon,
+  Api as ApiIcon
 } from '@mui/icons-material';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
+import ApiKeySettings from './ApiKeySettings';
 import { useChat } from '../context/ChatContext';
 import { EmotionType } from '../types';
+import { chatApiService } from '../services/api';
 
 const emotionIcons: Record<EmotionType, React.ReactElement> = {
   happy: <HappyIcon />,
@@ -40,9 +45,19 @@ const emotionColors: Record<EmotionType, string> = {
 };
 
 function ChatInterface() {
-  const { state, sendMessage, clearChat } = useChat();
+  const { state, sendMessage, clearChat, setUseApi } = useChat();
   const [inputValue, setInputValue] = useState('');
+  const [hasApiKey, setHasApiKey] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // 检查是否有 API Key
+    const key = chatApiService.getApiKey();
+    setHasApiKey(!!key);
+    if (key) {
+      setUseApi(true);
+    }
+  }, [setUseApi]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -57,6 +72,15 @@ function ChatInterface() {
       sendMessage(inputValue);
       setInputValue('');
     }
+  };
+
+  const handleApiKeyChange = (hasKey: boolean) => {
+    setHasApiKey(hasKey);
+    setUseApi(hasKey);
+  };
+
+  const handleApiToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUseApi(event.target.checked);
   };
 
   const getEmotionLabel = (emotion: EmotionType): string => {
@@ -113,15 +137,44 @@ function ChatInterface() {
                 }}
               />
             </Box>
-            <Tooltip title="清空对话">
-              <IconButton
-                onClick={clearChat}
-                sx={{ color: 'white' }}
-                size="small"
-              >
-                <DeleteIcon />
-              </IconButton>
-            </Tooltip>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              {hasApiKey && (
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={state.useApi || false}
+                      onChange={handleApiToggle}
+                      size="small"
+                      sx={{
+                        '& .MuiSwitch-switchBase.Mui-checked': {
+                          color: '#4caf50'
+                        },
+                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                          backgroundColor: '#4caf50'
+                        }
+                      }}
+                    />
+                  }
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <ApiIcon fontSize="small" />
+                      <Typography variant="caption">API</Typography>
+                    </Box>
+                  }
+                  sx={{ m: 0, color: 'white' }}
+                />
+              )}
+              <ApiKeySettings onApiKeyChange={handleApiKeyChange} />
+              <Tooltip title="清空对话">
+                <IconButton
+                  onClick={clearChat}
+                  sx={{ color: 'white' }}
+                  size="small"
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Tooltip>
+            </Box>
           </Box>
 
           {/* Messages Area */}
@@ -130,6 +183,15 @@ function ChatInterface() {
             <div ref={messagesEndRef} />
           </Box>
 
+          {/* Error Display */}
+          {state.error && (
+            <Box sx={{ px: 2, py: 1, backgroundColor: '#ffebee' }}>
+              <Typography variant="caption" color="error">
+                {state.error}
+              </Typography>
+            </Box>
+          )}
+
           {/* Input Area */}
           <Box sx={{ p: 2, borderTop: '1px solid #e0e0e0' }}>
             <MessageInput
@@ -137,6 +199,11 @@ function ChatInterface() {
               onChange={setInputValue}
               onSend={handleSend}
               disabled={state.isTyping}
+              placeholder={
+                hasApiKey && state.useApi 
+                  ? "输入消息... (使用 API 模式)" 
+                  : "输入消息... (本地模式)"
+              }
             />
           </Box>
         </Paper>
