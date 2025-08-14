@@ -1,6 +1,6 @@
 # 情感对话助手 (Emotion Chat Assistant)
 
-基于 **Vite + React + TypeScript** 开发的智能情感对话助手应用，能够识别用户情绪并提供相应的情感支持和对话反馈。
+基于 **Vite + React + TypeScript** 开发的智能情感对话助手应用，能够识别用户情绪并提供相应的情感支持和对话反馈。现已支持 OpenAI API 集成！
 
 ![Vite](https://img.shields.io/badge/Vite-5.0.8-646CFF?logo=vite)
 ![React](https://img.shields.io/badge/React-18.2.0-61DAFB?logo=react)
@@ -22,12 +22,20 @@
 - **智能回复** - 根据识别的情绪提供相应的回复
 - **实时对话** - 流畅的聊天界面和实时响应
 - **情绪可视化** - 显示当前对话的情绪状态
+- **🆕 OpenAI API 集成** - 支持接入自定义 API 端点，获得更智能的对话体验
+
+### 🔑 API 功能
+- **自定义 API Key 管理** - 用户可以设置自己的 OpenAI API Key
+- **双模式切换** - 支持本地模式和 API 模式自由切换
+- **对话历史保持** - API 模式下保持完整的对话上下文
+- **安全存储** - API Key 安全地存储在浏览器本地存储中
 
 ### 🎨 界面特性
 - 现代化的 Material Design 设计
 - 响应式布局，支持多种设备
 - 优雅的动画效果
 - 流畅的用户体验
+- API 状态实时显示
 
 ### 🤖 支持的情绪类型
 - 😊 **开心** (Happy)
@@ -84,6 +92,39 @@ npm run preview
 yarn preview
 ```
 
+## 🔌 API 配置使用
+
+### 设置 API Key
+
+1. 点击应用顶部的设置图标（⚙️）
+2. 在弹出的对话框中输入你的 OpenAI API Key
+3. 点击"保存"按钮
+4. API Key 将被安全地保存在浏览器本地存储中
+
+### 切换对话模式
+
+- **本地模式**：使用内置的简单响应逻辑，无需 API Key
+- **API 模式**：通过配置的 API 端点获得智能对话响应
+
+设置 API Key 后，可以通过顶部的开关在两种模式之间切换。
+
+### API 端点说明
+
+应用默认使用以下 API 端点：
+```
+https://my-first-workers.jichengme.workers.dev/chat
+```
+
+请求格式：
+```json
+{
+  "messages": [
+    { "role": "user", "content": "你好，来一段流式输出" }
+  ],
+  "stream": false
+}
+```
+
 ## 📁 项目结构
 
 ```
@@ -94,9 +135,12 @@ emotion-chat-assistant/
 │   ├── components/        # React 组件
 │   │   ├── ChatInterface.tsx    # 主聊天界面
 │   │   ├── MessageList.tsx      # 消息列表
-│   │   └── MessageInput.tsx     # 消息输入框
+│   │   ├── MessageInput.tsx     # 消息输入框
+│   │   └── ApiKeySettings.tsx   # API Key 设置组件
 │   ├── context/          # React Context
 │   │   └── ChatContext.tsx      # 聊天状态管理
+│   ├── services/         # 服务层
+│   │   └── api.ts              # API 请求服务
 │   ├── types/            # TypeScript 类型定义
 │   │   └── index.ts
 │   ├── utils/            # 工具函数
@@ -123,6 +167,7 @@ emotion-chat-assistant/
 - **样式方案**: Emotion (CSS-in-JS)
 - **状态管理**: React Context API + useReducer
 - **代码规范**: ESLint + TypeScript ESLint
+- **API 集成**: Fetch API + 自定义服务层
 
 ## 📊 Vite 配置说明
 
@@ -194,7 +239,10 @@ npm run deploy
 
 ## 🚧 开发计划
 
-- [ ] 集成真实的 AI API (如 OpenAI)
+- [x] 集成 OpenAI API 支持
+- [x] 添加 API Key 管理功能
+- [x] 实现本地/API 模式切换
+- [ ] 添加流式输出支持
 - [ ] 添加语音输入/输出功能
 - [ ] 实现用户账户系统
 - [ ] 添加对话历史保存功能
