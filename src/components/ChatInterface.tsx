@@ -9,7 +9,8 @@ import {
   Fade,
   Chip,
   Switch,
-  FormControlLabel
+  FormControlLabel,
+  Button
 } from '@mui/material';
 import {
   Delete as DeleteIcon,
@@ -17,7 +18,8 @@ import {
   SentimentSatisfiedAlt as HappyIcon,
   SentimentDissatisfied as SadIcon,
   SentimentNeutral as NeutralIcon,
-  Api as ApiIcon
+  Api as ApiIcon,
+  Stop as StopIcon
 } from '@mui/icons-material';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
@@ -45,7 +47,7 @@ const emotionColors: Record<EmotionType, string> = {
 };
 
 function ChatInterface() {
-  const { state, sendMessage, clearChat, setUseApi } = useChat();
+  const { state, sendMessage, clearChat, setUseApi, cancelRequest } = useChat();
   const [inputValue, setInputValue] = useState('');
   const [hasApiKey, setHasApiKey] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -81,6 +83,10 @@ function ChatInterface() {
 
   const handleApiToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUseApi(event.target.checked);
+  };
+
+  const handleStopGeneration = () => {
+    cancelRequest();
   };
 
   const getEmotionLabel = (emotion: EmotionType): string => {
@@ -183,6 +189,28 @@ function ChatInterface() {
             <div ref={messagesEndRef} />
           </Box>
 
+          {/* Stop Generation Button */}
+          {state.isTyping && state.useApi && (
+            <Box sx={{ px: 2, py: 1, display: 'flex', justifyContent: 'center' }}>
+              <Button
+                variant="outlined"
+                size="small"
+                startIcon={<StopIcon />}
+                onClick={handleStopGeneration}
+                sx={{
+                  borderColor: '#ff5252',
+                  color: '#ff5252',
+                  '&:hover': {
+                    borderColor: '#ff1744',
+                    backgroundColor: 'rgba(255, 23, 68, 0.08)'
+                  }
+                }}
+              >
+                停止生成
+              </Button>
+            </Box>
+          )}
+
           {/* Error Display */}
           {state.error && (
             <Box sx={{ px: 2, py: 1, backgroundColor: '#ffebee' }}>
@@ -201,7 +229,7 @@ function ChatInterface() {
               disabled={state.isTyping}
               placeholder={
                 hasApiKey && state.useApi 
-                  ? "输入消息... (使用 API 模式)" 
+                  ? "输入消息... (使用 API 模式，支持 Markdown 格式)" 
                   : "输入消息... (本地模式)"
               }
             />
