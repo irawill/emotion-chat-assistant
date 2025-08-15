@@ -184,7 +184,7 @@ function ChatInterface() {
           </Box>
 
           {/* Messages Area */}
-          <Box sx={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
+          <Box sx={{ flex: 1, overflowX: 'hidden', overflowY: 'auto', position: 'relative' }}>
             <MessageList messages={state.messages} isTyping={state.isTyping} />
             <div ref={messagesEndRef} />
           </Box>

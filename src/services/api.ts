@@ -142,58 +142,59 @@ export class ChatApiService {
         }
 
         buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || '';
+        // const lines = buffer.split('\n');
+        // buffer = lines.pop() || '';
+        callbacks.onChunk(buffer);
 
-        for (const line of lines) {
-          if (line.trim() === '') continue;
+        // for (const line of lines) {
+        //   if (line.trim() === '') continue;
           
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6).trim();
+        //   if (line.startsWith('data: ')) {
+        //     const data = line.slice(6).trim();
             
-            if (data === '[DONE]') {
-              callbacks.onComplete();
-              return;
-            }
+        //     if (data === '[DONE]') {
+        //       callbacks.onComplete();
+        //       return;
+        //     }
             
-            try {
-              const json = JSON.parse(data);
+        //     try {
+        //       const json = JSON.parse(data);
               
-              // 处理不同的流式响应格式
-              let content = '';
+        //       // 处理不同的流式响应格式
+        //       let content = '';
               
-              if (json.choices?.[0]?.delta?.content) {
-                content = json.choices[0].delta.content;
-              } else if (json.delta?.content) {
-                content = json.delta.content;
-              } else if (json.content) {
-                content = json.content;
-              } else if (typeof json === 'string') {
-                content = json;
-              }
+        //       if (json.choices?.[0]?.delta?.content) {
+        //         content = json.choices[0].delta.content;
+        //       } else if (json.delta?.content) {
+        //         content = json.delta.content;
+        //       } else if (json.content) {
+        //         content = json.content;
+        //       } else if (typeof json === 'string') {
+        //         content = json;
+        //       }
               
-              if (content) {
-                callbacks.onChunk(content);
-              }
-            } catch (e) {
-              // 如果不是 JSON，尝试直接作为文本处理
-              if (data && data !== '[DONE]') {
-                callbacks.onChunk(data);
-              }
-            }
-          } else if (line.trim() !== '') {
-            // 处理非 SSE 格式的流式响应
-            try {
-              const json = JSON.parse(line);
-              if (json.content) {
-                callbacks.onChunk(json.content);
-              }
-            } catch {
-              // 如果解析失败，可能是纯文本
-              callbacks.onChunk(line);
-            }
-          }
-        }
+        //       if (content) {
+        //         callbacks.onChunk(content);
+        //       }
+        //     } catch (e) {
+        //       // 如果不是 JSON，尝试直接作为文本处理
+        //       if (data && data !== '[DONE]') {
+        //         callbacks.onChunk(data);
+        //       }
+        //     }
+        //   } else if (line.trim() !== '') {
+        //     // 处理非 SSE 格式的流式响应
+        //     try {
+        //       const json = JSON.parse(line);
+        //       if (json.content) {
+        //         callbacks.onChunk(json.content);
+        //       }
+        //     } catch {
+        //       // 如果解析失败，可能是纯文本
+        //       callbacks.onChunk(line);
+        //     }
+        //   }
+        // }
       }
     } catch (error) {
       if (error instanceof Error) {
